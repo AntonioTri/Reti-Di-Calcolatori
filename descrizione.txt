@@ -1,0 +1,30 @@
+Descrizione progetto di reti
+
+Si vuole creare una struttura client - server - server capace di esaurire la richiesta del client di criptare n file scelti all’avvio di questo.
+La struttura si compone di almeno 3 programmi, il server centrale, il client ed gli n server secondari di destinazione. 
+
+Iniziamo con la descrizione del client:
+Questo client è parte di un progetto di reti di calcolatori e serve a gestire l'invio di file a un server centrale per criptazione o decriptazione. Ecco una descrizione dettagliata:
+
+Il client inizia includendo le librerie necessarie e definendo una serie di funzioni utili. Queste funzioni includono l'apertura dei file, la conversione degli argomenti, il calcolo del numero totale di file e l'invio dei file al server.
+Nella funzione “main”, il client crea una socket e si connette al server. Successivamente, entra in un loop che consente all'utente di selezionare diverse opzioni, come la criptazione dei file o l'uscita dal programma.
+Durante l'esecuzione del loop, il client accetta l'input dell'utente e agisce di conseguenza. Se l'utente sceglie l'opzione di criptazione, il client apre i file specificati al momento dell’esecuzione estraendoli dal buffer di “argv”, li invia al server insieme alle istruzioni di criptazione e rimane in attesa di una risposta.
+Il client invia i file uno per uno al server, inviando anche le istruzioni di criptazione corrispondenti. Dopo aver inviato tutti i file, attende la risposta del server. Una volta ricevuta la risposta, il client la gestisce, scrivendo i risultati su file e inviando eventuali segnali di controllo al server. Infine, il client termina l'esecuzione.
+Inoltre, il codice contiene diverse funzioni ausiliarie, come `Apertura_File` per l'apertura dei file, `Invio_File` per l'invio dei file al server e altre funzioni utili per la gestione dei file e delle comunicazioni con il server.
+Complessivamente, questo client fornisce un'interfaccia per l'invio di file a un server centrale per la criptazione o la decriptazione, gestendo tutte le operazioni necessarie per comunicare con il server e inviare i file in modo sicuro.
+
+Server Centrale:
+Il server include diverse librerie per la gestione delle socket, delle strutture dati e del tempo. Inoltre, vengono definite alcune costanti come il numero massimo di connessioni in attesa, la dimensione massima di un messaggio (MAXLINE) e il numero massimo di client che il server può gestire contemporaneamente (MAX_CLIENTS).
+
+Strutture dati:
+Il codice utilizza due strutture dati definite mediante typedef:
+- “CollezioneDati”: Rappresenta i dati associati a ciascun client, inclusi i buffer per memorizzare i messaggi e la scelta di criptazione.
+- “ClientData”: Contiene informazioni sullo stato del client, come il socket, il numero di file, il numero di richieste gestite e il numero di richieste completate. Ogni elemento di questa struttura contiene anche un array di `CollezioneDati`.
+
+Funzione main:
+Il `main` del server inizializza e configura la socket del server, accetta le connessioni dai server di criptazione, imposta la modalità di ascolto della socket e gestisce le richieste dei client tramite l'uso della funzione “select”. Quando un nuovo client si connette, il server lo accetta, lo aggiunge all'insieme di descrittori attivi e avvia un ciclo per gestire le richieste dei client. Durante il ciclo, il server riceve i messaggi dai client, li elabora e invia i risultati appropriati. Il ciclo continua finché il server è in esecuzione. Durante la ricezione dei file, inoltre, il client invierà segnali specifici per identificare la fine di un file, oppure per indicare il tipo di criptazione scelta per quel file appena inviato. I dati vengono memorizzati un un array di tipo “ClientData” discusso prima.  Funzione “handleRequest”:
+Questa funzione gestisce una singola richiesta proveniente da un client. Riceve il socket secondario (usato per comunicare con i server di criptazione), i dati del client, l'indice del client nell'array `ClientData`, la scelta di criptazione, l'insieme di descrittori attivi, l'array delle socket dei client e il numero di client connessi. I dati vengono inviati al server di criptazione scelto sulla base dei segnali inviati precedentemente dal client. Una volta ricevuta una risposta dal server terzo, viene eseguito un controllo per vedere se tutti i file sono stati criptati, questi vengono inviati solo al completamento di tutte le crepitazioni al cliente di apartenenza sempre dalla stessa funzione.
+
+
+I server secondari sono tutti uguali, l’unica cosa che cambia è la funzione di criptazione associata ad ognuno di essi, analizziamone la struttura: Il server secondari si connette al server principale e gestisce le richieste in thread separati. Quando avviato, il server secondario si collega al server principale utilizzando una socket TCP. Successivamente, entra in un ciclo in cui rimane in ascolto di eventuali richieste provenienti dal server principale. Quando arriva una richiesta, il server secondario crea un nuovo thread per gestirla in modo concorrente. Ogni thread prende la richiesta ricevuta, che consiste in una stringa,e la cripta in base alla sua funzione. Dopodiché, invia la stringa modificata al server principale tramite la socket secondaria. Questo approccio consente al server secondario di gestire più richieste contemporaneamente, migliorando l'efficienza e la reattività del sistema. Il server secondario continua ad ascoltare le richieste finché la connessione con il server principale non viene interrotta o si verifica un errore, momento in cui termina il suo ciclo e chiude la socket secondaria.
+
